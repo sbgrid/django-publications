@@ -55,7 +55,7 @@ class OrderedModelAdmin(admin.ModelAdmin):
                     model=self.model._meta.model_name)
 
     def get_urls(self):
-        from django.conf.urls import include, url
+        from django.conf.urls import url
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)

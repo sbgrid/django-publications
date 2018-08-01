@@ -2,7 +2,7 @@ __license__ = 'MIT License <http://www.opensource.org/licenses/mit-license.php>'
 __author__ = 'Lucas Theis <lucas@theis.io>'
 __docformat__ = 'epytext'
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin
 from publications.admin_views import import_bibtex
 from publications.models import CustomFile, CustomLink
