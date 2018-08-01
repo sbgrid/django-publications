@@ -64,7 +64,7 @@ class OrderedModelAdmin(admin.ModelAdmin):
                     name='{app}_{model}_order_up'.format(**self.get_model_info())),
                 url(r'^(.+)/move-(down)/$', wrap(self.move_view),
                     name='{app}_{model}_order_down'.format(**self.get_model_info())),
-                ,] + super(OrderedModelAdmin, self).get_urls()
+                ] + super(OrderedModelAdmin, self).get_urls()
 
     def _get_changelist(self, request):
         list_display = self.get_list_display(request)
