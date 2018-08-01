@@ -27,19 +27,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from functools import update_wrapper
 
+from django.contrib import admin
+from django.contrib.admin.views.main import ChangeList
 from django.core.urlresolvers import reverse
+from django.db.models.options import Options
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
-from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
+
 try:
     from django.contrib.admin.utils import unquote
 except ImportError:
     # Django <= 1.6
     from django.contrib.admin.util import unquote
-from django.contrib.admin.views.main import ChangeList
-from django.db.models.options import Options
 
 # Django <= 1.6
 if not getattr(Options, 'model_name', False):
@@ -54,22 +55,16 @@ class OrderedModelAdmin(admin.ModelAdmin):
                     model=self.model._meta.model_name)
 
     def get_urls(self):
-        try:
-            from django.conf.urls import patterns, url
-        except ImportError:
-            from django.conf.urls.defaults import patterns, url
-
+        from django.conf.urls import include, url
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
-        return patterns('',
-                        url(r'^(.+)/move-(up)/$', wrap(self.move_view),
-                            name='{app}_{model}_order_up'.format(**self.get_model_info())),
-
-                        url(r'^(.+)/move-(down)/$', wrap(self.move_view),
-                            name='{app}_{model}_order_down'.format(**self.get_model_info())),
-                        ) + super(OrderedModelAdmin, self).get_urls()
+        return [url(r'^(.+)/move-(up)/$', wrap(self.move_view),
+                    name='{app}_{model}_order_up'.format(**self.get_model_info())),
+                url(r'^(.+)/move-(down)/$', wrap(self.move_view),
+                    name='{app}_{model}_order_down'.format(**self.get_model_info())),
+                ,] + super(OrderedModelAdmin, self).get_urls()
 
     def _get_changelist(self, request):
         list_display = self.get_list_display(request)
